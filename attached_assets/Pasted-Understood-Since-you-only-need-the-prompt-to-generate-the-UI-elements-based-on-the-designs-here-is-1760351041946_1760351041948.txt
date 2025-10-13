@@ -1,0 +1,32 @@
+Understood. Since you only need the prompt to generate the UI elements based on the designs, here is a focused prompt for UI extraction and component breakdown.
+
+---
+
+## UI Extraction and Component Breakdown Prompt
+
+**Objective:** Generate all core reusable UI components and a high-level structure for the main application screens (Dashboard, Spending Insights, Budgeting) based on the visual designs provided for the FinGuard application (mobile and web views).
+
+### 1. Reusable Core Components
+
+Focus on generating the code structure and styling for the following components, optimized for a chosen framework (e.g., React Native/React.js, Vue, or Flutter):
+
+* **Header/Navigation Bar:** The purple header with the FinGuard logo and back/action icons. Must adapt for both mobile (bottom tab/top nav) and web (sidebar/top bar).
+* **Primary Button:** The solid purple, rounded button (e.g., "Get Started," "Connect Bank Account").
+* **Secondary Button:** The outlined, white background button (e.g., "Sign Up / Log In").
+* **Data Card:** The general white card component used throughout the app to contain balance, charts, and lists. Must support titles and shadows.
+* **Transaction Card:** A reusable list item showing: Icon (category), Title (Merchant Name), Subtitle (Category), and Amount (in Naira - ₦).
+
+### 2. Screen Structure Components
+
+Focus on the distinct elements unique to the core screens:
+
+* **Spending Donut Chart Component:** The visual component displaying the current month's spending by category, with a clear central label for Total Spent.
+* **Key Alert/Insight Card:** The prominently displayed card used on the Dashboard for actionable insights (e.g., "You spent ₦12,000 on bank charges...").
+* **Budget Progress Bar:** The component used on the Budgeting page showing spending vs. budget as a visual horizontal bar.
+* **Goal Tracking Card:** The component on the Add Goal page showing the goal name, current amount saved, target amount, and a progress percentage.
+
+### 3. Implementation Request
+
+Please provide the output in a pseudo-code or the syntax of your preferred frontend framework (e.g., React/React Native), focusing on the component hierarchy, key styling properties (colors, fonts, layout), and necessary props for data injection. Assume a global stylesheet with the primary purple (`#6F38C5`) and secondary white/light gray colors.
+
+---
