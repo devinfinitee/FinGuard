@@ -1,148 +1,151 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { TransactionCard } from "@/components/transaction-card";
 import { InsightCard } from "@/components/insight-card";
 import { SpendingChart } from "@/components/spending-chart";
-import type { Transaction, Insight } from "@shared/schema";
+import { Bell, Mic, Zap } from "lucide-react";
+import { animateCounter } from "@/lib/gsap-utils";
+import { useFadeIn, useStaggerChildren } from "@/hooks/useGSAP";
+import { mockTransactions, mockInsights, mockSpendingData, mockBalance } from "@/data/mockData";
 
 export default function Dashboard() {
-  const { data: balance, isLoading: balanceLoading, error: balanceError } = useQuery<{ total: number }>({
-    queryKey: ["/api/balance"],
-  });
+  // Using mock data - will be replaced with API calls when backend is ready
+  const balance = mockBalance;
+  const transactions = mockTransactions.slice(0, 5);
+  const insights = mockInsights;
+  const spendingData = mockSpendingData;
+  
+  const balanceLoading = false;
+  const transactionsLoading = false;
+  const insightsLoading = false;
+  const spendingLoading = false;
+  
+  const totalSpent = spendingData.reduce((sum, item) => sum + item.value, 0);
+  
+  const balanceRef = useRef<HTMLParagraphElement>(null);
+  const headerRef = useFadeIn(0.1);
+  const cardsRef = useStaggerChildren(0.3);
 
-  const { data: transactions, isLoading: transactionsLoading, error: transactionsError } = useQuery<Transaction[]>({
-    queryKey: ["/api/transactions/recent"],
-  });
-
-  const { data: insights, isLoading: insightsLoading, error: insightsError } = useQuery<Insight[]>({
-    queryKey: ["/api/insights"],
-  });
-
-  const { data: spendingData, isLoading: spendingLoading, error: spendingError } = useQuery<{ name: string; value: number; color: string }[]>({
-    queryKey: ["/api/spending/monthly"],
-  });
-
-  const totalSpent = spendingData?.reduce((sum, item) => sum + item.value, 0) || 0;
+  useEffect(() => {
+    if (balanceRef.current) {
+      animateCounter(balanceRef.current, balance.total, 1.5, '₦', '');
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground" data-testid="text-welcome">
-          Welcome back, Sarah
-        </h1>
-        <p className="text-muted-foreground">Track smart. Spend wise. Live free.</p>
+      {/* Header with Actions */}
+      <div ref={headerRef} className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground" data-testid="text-welcome">
+            Welcome back, Sarah
+          </h1>
+          <p className="text-muted-foreground">Track smart. Spend wise. Live free.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <Mic className="w-5 h-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <Bell className="w-5 h-5" />
+          </Button>
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Zap className="w-4 h-4 mr-2" />
+            Quick Actions
+          </Button>
+        </div>
       </div>
 
-      {/* Balance Card */}
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-        <CardContent className="pt-6">
-          <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
-          {balanceLoading ? (
-            <div className="h-12 bg-muted/50 rounded-md animate-pulse my-1" />
-          ) : balanceError ? (
-            <p className="text-destructive">Failed to load balance</p>
-          ) : (
-            <p className="text-4xl font-bold text-foreground" data-testid="text-balance">
-              ₦{balance?.total.toLocaleString("en-NG", { minimumFractionDigits: 0 }) || "385,000"}
+      <div ref={cardsRef} className="grid lg:grid-cols-3 gap-6">
+        {/* Balance Card */}
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg hover:shadow-xl transition-shadow">
+          <CardContent className="pt-6">
+            <p className="text-purple-100 mb-2">Total Balance</p>
+            <p ref={balanceRef} className="text-4xl font-bold" data-testid="text-balance">
+              ₦{balance.total.toLocaleString("en-NG", { minimumFractionDigits: 0 })}
             </p>
-          )}
-          <p className="text-xs text-muted-foreground mt-2">As of today</p>
-        </CardContent>
-      </Card>
-
-      {/* Key Insight */}
-      {insightsLoading ? (
-        <div className="h-20 bg-muted/50 rounded-md animate-pulse" />
-      ) : insightsError ? (
-        <Card className="bg-destructive/10 border-destructive/20 p-4">
-          <p className="text-sm text-destructive">Failed to load insights</p>
+            <p className="text-purple-100 text-sm mt-2">As of today</p>
+          </CardContent>
         </Card>
-      ) : insights && insights.length > 0 ? (
-        <InsightCard 
-          message={insights[0].message}
-          type={insights[0].type as "warning" | "info" | "success"}
-        />
-      ) : null}
+
+        {/* Key Insight Card */}
+        {insights && insights.length > 0 && (
+          <Card className="lg:col-span-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white border-0 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-lg mb-1">
+                    {insights[0].message.split('.')[0]}
+                  </p>
+                  <p className="text-purple-100 text-sm">
+                    {insights[0].message.split('.').slice(1).join('.')}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Spending Summary & Recent Transactions Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Spending Summary */}
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="text-lg">Spending Summary</CardTitle>
             <p className="text-sm text-muted-foreground">(This Month)</p>
           </CardHeader>
           <CardContent className="relative">
-            {spendingLoading ? (
-              <div className="h-64 flex items-center justify-center">
-                <div className="w-48 h-48 bg-muted/50 rounded-full animate-pulse" />
-              </div>
-            ) : spendingError ? (
-              <div className="h-64 flex items-center justify-center">
-                <p className="text-destructive">Failed to load spending data</p>
-              </div>
-            ) : spendingData && spendingData.length > 0 ? (
-              <SpendingChart data={spendingData} total={totalSpent} />
-            ) : (
-              <div className="h-64 flex items-center justify-center">
-                <p className="text-muted-foreground">No spending data yet</p>
-              </div>
-            )}
+            <SpendingChart data={spendingData} total={totalSpent} />
           </CardContent>
         </Card>
 
         {/* Recent Transactions */}
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="text-lg">Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
-            {transactionsLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-16 bg-muted/50 rounded-md animate-pulse" />
-                ))}
-              </div>
-            ) : transactionsError ? (
-              <div className="h-40 flex items-center justify-center">
-                <p className="text-destructive">Failed to load transactions</p>
-              </div>
-            ) : transactions && transactions.length > 0 ? (
-              <div className="divide-y divide-border">
-                {transactions.map((transaction) => (
-                  <TransactionCard key={transaction.id} transaction={transaction} showDate />
-                ))}
-              </div>
-            ) : (
-              <div className="h-40 flex items-center justify-center">
-                <p className="text-muted-foreground">No transactions yet</p>
-              </div>
-            )}
+            <div className="divide-y divide-border">
+              {transactions.map((transaction) => (
+                <TransactionCard key={transaction.id} transaction={transaction} showDate />
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Trends - Can be expanded later */}
-      <Card>
+      {/* Recent Trends */}
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <CardTitle className="text-lg">Recent Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {transactions && transactions.slice(0, 2).map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div>
-                  <p className="font-medium text-foreground">{transaction.merchant}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(transaction.date).toLocaleDateString("en-NG")}
+          <div className="space-y-3">
+            {transactions.slice(0, 2).map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-transparent dark:from-purple-900/20 rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                        {transaction.merchant.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">{transaction.merchant}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(transaction.date).toLocaleDateString("en-NG")}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-semibold text-destructive">
+                    ₦{parseFloat(transaction.amount).toLocaleString("en-NG", { minimumFractionDigits: 0 })}
                   </p>
                 </div>
-                <p className="font-semibold text-destructive">
-                  ₦{parseFloat(transaction.amount).toLocaleString("en-NG", { minimumFractionDigits: 0 })}
-                </p>
-              </div>
-            ))}
+              ))}
           </div>
         </CardContent>
       </Card>

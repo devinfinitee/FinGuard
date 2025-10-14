@@ -1,8 +1,27 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { FinGuardLogo } from "@/components/finguard-logo";
+import { useFadeIn, useStaggerChildren, useScaleIn } from "@/hooks/useGSAP";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 export default function Landing() {
+  const heroRef = useFadeIn(0.2);
+  const featuresRef = useStaggerChildren(0.5);
+  const piggyRef = useRef<SVGGElement>(null);
+
+  useEffect(() => {
+    if (piggyRef.current) {
+      gsap.to(piggyRef.current, {
+        y: -15,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut',
+      });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -15,19 +34,18 @@ export default function Landing() {
             </div>
             
             <nav className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-features">
-                Features
-              </a>
-              <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-pricing">
-                Pricing
-              </a>
-              <Link href="/dashboard">
-                <a className="text-sm text-muted-foreground hover:text-foreground transition-colors" data-testid="link-login">
+              <Link href="/features">
+                <a className="text-sm text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors" data-testid="link-features">
+                  Features
+                </a>
+              </Link>
+              <Link href="/login">
+                <a className="text-sm text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors" data-testid="link-login">
                   Log In
                 </a>
               </Link>
-              <Link href="/dashboard">
-                <Button size="default" data-testid="button-signup-header">
+              <Link href="/signup">
+                <Button size="default" className="bg-purple-600 hover:bg-purple-700 text-white" data-testid="button-signup-header">
                   Sign Up
                 </Button>
               </Link>
@@ -39,7 +57,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
+          <div ref={heroRef} className="space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
               Track smart. Spend wise. Live free.
             </h1>
@@ -49,19 +67,19 @@ export default function Landing() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/dashboard">
-                <Button size="lg" className="w-full sm:w-auto rounded-full px-8" data-testid="button-get-started">
+              <Link href="/signup">
+                <Button size="lg" className="w-full sm:w-auto rounded-full px-8 bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-get-started">
                   Get Started
                 </Button>
               </Link>
-              <Link href="/dashboard">
+              <Link href="/login">
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="w-full sm:w-auto rounded-full px-8 border-2 border-primary text-primary hover:bg-primary/5" 
+                  className="w-full sm:w-auto rounded-full px-8 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20" 
                   data-testid="button-login"
                 >
-                  Sign Up / Log In
+                  Log In
                 </Button>
               </Link>
             </div>
@@ -72,6 +90,7 @@ export default function Landing() {
             <div className="relative w-full max-w-md aspect-square">
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg viewBox="0 0 400 400" className="w-full h-full">
+                  <g ref={piggyRef}>
                   {/* Piggy bank illustration */}
                   <ellipse cx="200" cy="320" rx="150" ry="20" fill="hsl(270, 60%, 90%)" opacity="0.3"/>
                   
@@ -119,6 +138,7 @@ export default function Landing() {
                     <rect x="18" y="10" width="12" height="50" rx="2" fill="hsl(270, 60%, 60%)"/>
                     <rect x="36" y="0" width="12" height="60" rx="2" fill="hsl(32, 95%, 58%)"/>
                   </g>
+                  </g>
                 </svg>
               </div>
             </div>
@@ -133,9 +153,9 @@ export default function Landing() {
             Everything you need to manage your finances
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div ref={featuresRef} className="grid md:grid-cols-3 gap-8">
             <div className="text-center space-y-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto">
                 <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>

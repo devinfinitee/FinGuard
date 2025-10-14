@@ -1,5 +1,5 @@
 import { ShoppingBag, Car, Tv, Receipt, MoreHorizontal } from "lucide-react";
-import type { Budget } from "@shared/schema";
+import type { Budget } from "@/types/schema";
 import { Progress } from "@/components/ui/progress";
 
 const categoryIcons = {
@@ -19,26 +19,31 @@ const categoryColors = {
 };
 
 interface BudgetProgressBarProps {
-  budget: Budget;
+  budget?: Budget;
+  spent?: number;
+  total?: number;
+  category?: string;
 }
 
-export function BudgetProgressBar({ budget }: BudgetProgressBarProps) {
-  const Icon = categoryIcons[budget.category as keyof typeof categoryIcons] || MoreHorizontal;
-  const colorClass = categoryColors[budget.category as keyof typeof categoryColors] || "text-muted-foreground";
+export function BudgetProgressBar({ budget, spent: spentProp, total: totalProp, category: categoryProp }: BudgetProgressBarProps) {
+  const category = budget?.category || categoryProp || "Other";
+  const spent = budget ? parseFloat(budget.spent) : (spentProp || 0);
+  const total = budget ? parseFloat(budget.amount) : (totalProp || 0);
   
-  const spent = parseFloat(budget.spent);
-  const total = parseFloat(budget.amount);
-  const percentage = (spent / total) * 100;
+  const Icon = categoryIcons[category as keyof typeof categoryIcons] || MoreHorizontal;
+  const colorClass = categoryColors[category as keyof typeof categoryColors] || "text-muted-foreground";
+  
+  const percentage = total > 0 ? (spent / total) * 100 : 0;
   const remaining = Math.max(0, total - spent);
 
   return (
-    <div className="space-y-3" data-testid={`budget-${budget.category.toLowerCase().replace(/\s+/g, "-")}`}>
+    <div className="space-y-3" data-testid={`budget-${category.toLowerCase().replace(/\s+/g, "-")}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Icon className={`w-5 h-5 ${colorClass}`} />
-          <span className="font-medium text-foreground">{budget.category}</span>
+          <span className="font-medium text-foreground">{category}</span>
         </div>
-        <span className="text-sm font-semibold text-foreground" data-testid={`text-budget-amount-${budget.id}`}>
+        <span className="text-sm font-semibold text-foreground" data-testid={`text-budget-amount-${budget?.id || category}`}>
           ₦{total.toLocaleString("en-NG", { minimumFractionDigits: 0 })}
         </span>
       </div>
@@ -46,10 +51,10 @@ export function BudgetProgressBar({ budget }: BudgetProgressBarProps) {
       <Progress value={percentage} className="h-2" />
       
       <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground" data-testid={`text-spent-${budget.id}`}>
+        <span className="text-muted-foreground" data-testid={`text-spent-${budget?.id || category}`}>
           ₦{spent.toLocaleString("en-NG", { minimumFractionDigits: 0 })} spent
         </span>
-        <span className="text-muted-foreground" data-testid={`text-remaining-${budget.id}`}>
+        <span className="text-muted-foreground" data-testid={`text-remaining-${budget?.id || category}`}>
           ₦{remaining.toLocaleString("en-NG", { minimumFractionDigits: 0 })} left
         </span>
       </div>

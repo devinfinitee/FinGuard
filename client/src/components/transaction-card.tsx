@@ -1,5 +1,5 @@
 import { ShoppingBag, Car, Tv, CreditCard, Receipt, Music, Heart, MoreHorizontal } from "lucide-react";
-import type { Transaction } from "@shared/schema";
+import type { Transaction } from "@/types/schema";
 
 const categoryIcons = {
   "Food & Dining": ShoppingBag,
