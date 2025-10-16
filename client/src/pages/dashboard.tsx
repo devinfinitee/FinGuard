@@ -100,7 +100,7 @@ export default function Dashboard() {
             <p className="text-sm text-muted-foreground">(This Month)</p>
           </CardHeader>
           <CardContent className="relative">
-            <SpendingChart data={spendingData} total={totalSpent} />
+            <SpendingChart data={spendingData} total={totalSpent} />e
           </CardContent>
         </Card>
 

@@ -7,22 +7,17 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
+  publicDir: path.resolve(import.meta.dirname, "public"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
   server: {
-    host: true, // Listen on all addresses including LAN and public
+    host: true,
     port: 5173,
     open: true,
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
   },
 });

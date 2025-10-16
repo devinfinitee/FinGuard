@@ -4,7 +4,6 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "predev": "node scripts/ensure-install.cts",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
